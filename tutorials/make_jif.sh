@@ -85,21 +85,35 @@ HL_TRACE_FILE=${TRACE_FILE} ./build/tutorials
 
 
 # min_value max_value color_dim blank zoom cost x y strides
-MIN_VAL=0
+MIN_VAL=-1
 MAX_VAL=6
 COLOR_DIM=-1
-ZOOM=32
 BLANK=0
-COST_T=32
-X=32
-Y=32
+ZOOM=10
+COST_T=2
+X=${ZOOM}
+Y=${ZOOM}
 STRIDES='1 0 0 1'
-HEIGHT=$((5 * ${ZOOM}))
-WIDTH=$((5 * ${ZOOM}))
-cat ${TRACE_FILE} | ../util/build/HalideTraceViz -s $WIDTH $HEIGHT -t 1 -d 10000 -h 4 \
--f gradient 0 6 -1 0 32 2 32 32 1 0 0 1 | avconv -f rawvideo -pix_fmt bgr32 -s ${WIDTH}x${HEIGHT} -i /dev/stdin tmp/frames_%04d.tif
-make_gif lesson_05_row_major.gif 10
+HEIGHT=$((12 * ${ZOOM}))
+WIDTH=$((12 * ${ZOOM}))
 
-# -f gradient ${MIN_VAL} ${MAX_VAL} ${COLOR_DIM} ${BLANK} ${ZOOM} ${COST_T} ${X} ${Y} ${STRIDES} | avconv -f rawvideo -pix_fmt bgr32 -s ${WIDTH}x${HEIGHT} -i /dev/stdin tmp/frames_%04d.tif
+DELAY=2
+
+FUNC_NAME=gradient
+
+cat ${TRACE_FILE} | ../util/build/HalideTraceViz -s $WIDTH $HEIGHT -t 1 -d 10000 -h 4 \
+-f ${FUNC_NAME} ${MIN_VAL} ${MAX_VAL} ${COLOR_DIM} ${BLANK} ${ZOOM} ${COST_T} ${X} ${Y} ${STRIDES} | avconv -f rawvideo -pix_fmt bgr32 -s ${WIDTH}x${HEIGHT} -i /dev/stdin tmp/frames_%04d.tif
+make_gif ${FUNC_NAME}.gif ${DELAY}
+
+FUNC_NAME=gradient_col_major
+cat ${TRACE_FILE} | ../util/build/HalideTraceViz -s $WIDTH $HEIGHT -t 1 -d 10000 -h 4 \
+-f ${FUNC_NAME} ${MIN_VAL} ${MAX_VAL} ${COLOR_DIM} ${BLANK} ${ZOOM} ${COST_T} ${X} ${Y} ${STRIDES} | avconv -f rawvideo -pix_fmt bgr32 -s ${WIDTH}x${HEIGHT} -i /dev/stdin tmp/frames_%04d.tif
+make_gif ${FUNC_NAME}.gif ${DELAY}
+
+FUNC_NAME=gradient_in_vectors
+MAX_VAL=11
+cat ${TRACE_FILE} | ../util/build/HalideTraceViz -s $WIDTH $HEIGHT -t 1 -d 10000 -h 4 \
+-f ${FUNC_NAME} ${MIN_VAL} ${MAX_VAL} ${COLOR_DIM} ${BLANK} ${ZOOM} ${COST_T} ${X} ${Y} ${STRIDES} | avconv -f rawvideo -pix_fmt bgr32 -s ${WIDTH}x${HEIGHT} -i /dev/stdin tmp/frames_%04d.tif
+make_gif ${FUNC_NAME}.gif ${DELAY}
 
 echo "DONE"
