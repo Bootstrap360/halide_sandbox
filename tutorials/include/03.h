@@ -1,7 +1,11 @@
 #pragma once
 #include "Halide.h"
 #include <stdio.h>
+// Halide tutorial lesson 3: Inspecting the generated code
 
+// This lesson demonstrates how to inspect what the Halide compiler is producing.
+
+// http://halide-lang.org/tutorials/tutorial_lesson_03_debugging_1.html
 
 void tutorial_03()
 {

@@ -2,6 +2,11 @@
 #include "Halide.h"
 #include <stdio.h>
 
+// Halide tutorial lesson 1: Getting started with Funcs, Vars, and Exprs
+
+// This lesson demonstrates basic usage of Halide as a JIT compiler for imaging.
+// http://halide-lang.org/tutorials/tutorial_lesson_01_basics.html
+
 void tutorial_01()
 {
     // This program defines a single-stage imaging pipeline that

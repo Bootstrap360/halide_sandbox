@@ -4,6 +4,13 @@
 
 #include "halide_image_io.h"
 
+// Halide tutorial lesson 2: Processing images
+
+// This lesson demonstrates how to pass in input images and manipulate
+// them.
+
+// http://halide-lang.org/tutorials/tutorial_lesson_02_input_image.html 
+
 
 void tutorial_02(float gain = 1.8f)
 {
