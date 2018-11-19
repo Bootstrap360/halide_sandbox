@@ -19,4 +19,14 @@ This project is to learn how to use halide
 1. Launch another terminal into the same docker
 
         docker exec -it <hash> bash
+
+
+## TODO
+
+add the following to the image
+
+        apt-get install libav-tools
+        apt-get install imagemagick
+        apt-get install gifsicle
+
     

@@ -1,0 +1,110 @@
+<head><style type='text/css'>
+ body { font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 12px; background: #f8f8f8; margin-left:15px; } 
+ a, a:hover, a:visited, a:active { color: inherit; text-decoration: none; } 
+ b { font-weight: normal; }
+ p.WrapLine { margin: 0px; margin-left: 30px; text-indent:-30px; } 
+ div.WrapLine { margin-left: 30px; text-indent:-30px; } 
+ div.Indent { padding-left: 15px; }
+ div.ShowHide { position:absolute; left:-12px; width:12px; height:12px; } 
+ span.Comment { color: #998; font-style: italic; }
+ span.Keyword { color: #333; font-weight: bold; }
+ span.Assign { color: #d14; font-weight: bold; }
+ span.Symbol { color: #990073; }
+ span.Type { color: #445588; font-weight: bold; }
+ span.StringImm { color: #d14; }
+ span.IntImm { color: #099; }
+ span.FloatImm { color: #099; }
+ b.Highlight { font-weight: bold; background-color: #DDD; }
+ span.Highlight { font-weight: bold; background-color: #FF0; }
+ </style>
+<script language='javascript' type='text/javascript'>
+ function toggle(id) { 
+     e = document.getElementById(id); 
+     show = document.getElementById(id + '-show'); 
+     hide = document.getElementById(id + '-hide'); 
+     if (e.style.display != 'none') { 
+         e.style.display = 'none'; 
+         show.style.display = 'block'; 
+         hide.style.display = 'none'; 
+     } else { 
+         e.style.display = 'block'; 
+         show.style.display = 'none'; 
+         hide.style.display = 'block'; 
+     } 
+     return false; 
+ }</script>
+<link rel='stylesheet' type='text/css' href='my.css'>
+<script language='javascript' type='text/javascript' src='my.js'></script>
+<link href='http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css' rel='stylesheet'>
+<script src='http://code.jquery.com/jquery-1.10.2.js'></script>
+</head>
+ <body>
+<div class='Function' id='0-2'>
+<a class=ExpandButton onclick='return toggle(4);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=4-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=4-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Matched' id='3-5'><span class='Keyword' id='6-7'>func</span> __gradient(</span><b class='Variable Matched' id='9-10'>gradient</b><span class='Matched' id='3-11'>)</span></a> <span class='Matched' id='3-13'>{</span><div class='FunctionBody Indent' id='4'>
+<div class='Block' id='15-16'>
+<div class='IfThenElse' id='17-18'>
+<a class=ExpandButton onclick='return toggle(20);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=20-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=20-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Matched' id='19-21'><span class='Keyword' id='22-23'>if</span> (</span><b class='Variable Matched' id='25-26'>gradient.host_and_dev_are_null</b><span class='Matched' id='19-27'>)</span></a> <span class='Matched' id='19-29'>{</span><div class='ThenBody Indent' id='20'>
+<div class='Evaluate' id='31-32'>
+<span class='Call' id='33-34'><span class='Matched' id='35-38'><span class='Symbol' id='35-36'>rewrite_buffer</span>(</span><b class='Variable Matched' id='40-41'>gradient.buffer</b><span class='Matched' id='35-42'>,</span> <span class='IntImm Imm' id='35-44'>4</span><span class='Matched' id='35-46'>,</span> <b class='Variable Matched' id='48-49'>gradient.min.0</b><span class='Matched' id='35-50'>,</span> <b class='Variable Matched' id='52-53'>gradient.extent.0</b><span class='Matched' id='35-54'>,</span> <span class='IntImm Imm' id='35-56'>1</span><span class='Matched' id='35-58'>,</span> <b class='Variable Matched' id='60-61'>gradient.min.1</b><span class='Matched' id='35-62'>,</span> <b class='Variable Matched' id='64-65'>gradient.extent.1</b><span class='Matched' id='35-66'>,</span> <b class='Variable Matched' id='52-68'>gradient.extent.0</b><span class='Matched' id='35-69'>)</span></span></div>
+</div>
+<span class='Matched' id='19-71'>}</span></div>
+<div class='IfThenElse' id='17-73'>
+<a class=ExpandButton onclick='return toggle(75);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=75-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=75-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Matched' id='74-76'><span class='Keyword' id='77-78'>if</span> (</span><span class='Not' id='74-80'>!<b class='Variable Matched' id='25-82'>gradient.host_and_dev_are_null</b></span><span class='Matched' id='74-83'>)</span></a> <span class='Matched' id='74-85'>{</span><div class='ThenBody Indent' id='75'>
+<div class='Block' id='87-88'>
+<div class='AssertStmt WrapLine' id='89-90'>
+<span class='Matched' id='91-94'><span class='Symbol' id='91-92'>assert</span>(</span><span class='BinaryOp' id='91-96'><span class='Matched' id='97-98'>(</span><b class='Variable Matched' id='100-101'>gradient.elem_size</b> <span class='Operator Matched' id='97-102'>==</span> <span class='IntImm Imm' id='97-104'>4</span><span class='Matched' id='97-106'>)</span></span><span class='Matched' id='91-108'>,</span> <span class='Call' id='91-110'><span class='Matched' id='111-114'><span class='Symbol' id='111-112'>halide_error_bad_elem_size</span>(</span><span class='StringImm' id='111-116'>"Output buffer gradient"</span><span class='Matched' id='111-118'>,</span> <span class='StringImm' id='111-120'>"int32"</span><span class='Matched' id='111-122'>,</span> <b class='Variable Matched' id='100-124'>gradient.elem_size</b><span class='Matched' id='111-125'>,</span> <span class='IntImm Imm' id='111-127'>4</span><span class='Matched' id='111-129'>)</span></span><span class='Matched' id='91-131'>)</span></div>
+<div class='AssertStmt WrapLine' id='89-133'>
+<span class='Matched' id='134-137'><span class='Symbol' id='134-135'>assert</span>(</span><span class='BinaryOp' id='134-139'><span class='Matched' id='140-141'>(</span><b class='Variable Matched' id='143-144'>gradient.stride.0</b> <span class='Operator Matched' id='140-145'>==</span> <span class='IntImm Imm' id='140-147'>1</span><span class='Matched' id='140-149'>)</span></span><span class='Matched' id='134-151'>,</span> <span class='Call' id='134-153'><span class='Matched' id='154-157'><span class='Symbol' id='154-155'>halide_error_constraint_violated</span>(</span><span class='StringImm' id='154-159'>"gradient.stride.0"</span><span class='Matched' id='154-161'>,</span> <b class='Variable Matched' id='143-163'>gradient.stride.0</b><span class='Matched' id='154-164'>,</span> <span class='StringImm' id='154-166'>"1"</span><span class='Matched' id='154-168'>,</span> <span class='IntImm Imm' id='154-170'>1</span><span class='Matched' id='154-172'>)</span></span><span class='Matched' id='134-174'>)</span></div>
+<div class='LetStmt' id='89-177'>
+<p class=WrapLine><span class='Matched' id='178-179'><span class='Keyword' id='180-181'>let</span> <b class='Variable Matched' id='176-183'>gradient.total_extent.1</b></span> <span class='Operator Assign Matched' id='178-184'>=</span> <span class='BinaryOp' id='178-186'><span class='Matched' id='187-188'>(</span><span class='Cast' id='187-190'><span class='Matched' id='191-192'><span class='Type' id='191-194'>int64</span>(</span><b class='Variable Matched' id='64-196'>gradient.extent.1</b><span class='Matched' id='191-197'>)</span></span> <span class='Operator Matched' id='187-199'>*</span> <span class='Cast' id='187-201'><span class='Matched' id='202-203'><span class='Type' id='202-205'>int64</span>(</span><b class='Variable Matched' id='52-207'>gradient.extent.0</b><span class='Matched' id='202-208'>)</span></span><span class='Matched' id='187-210'>)</span></span></p><div class='Block' id='178-212'>
+<div class='AssertStmt WrapLine' id='213-214'>
+<span class='Matched' id='215-218'><span class='Symbol' id='215-216'>assert</span>(</span><span class='BinaryOp' id='215-220'><span class='Matched' id='221-222'>(</span><span class='Cast' id='221-224'><span class='Matched' id='225-226'><span class='Type' id='225-228'>int64</span>(</span><b class='Variable Matched' id='52-230'>gradient.extent.0</b><span class='Matched' id='225-231'>)</span></span> <span class='Operator Matched' id='221-233'>&lt=</span> <span class='IntImm Imm' id='221-235'>(int64)2147483647</span><span class='Matched' id='221-237'>)</span></span><span class='Matched' id='215-239'>,</span> <span class='Call' id='215-241'><span class='Matched' id='242-245'><span class='Symbol' id='242-243'>halide_error_buffer_allocation_too_large</span>(</span><span class='StringImm' id='242-247'>"gradient"</span><span class='Matched' id='242-249'>,</span> <span class='Cast' id='242-251'><span class='Matched' id='252-253'><span class='Type' id='252-255'>int64</span>(</span><b class='Variable Matched' id='52-257'>gradient.extent.0</b><span class='Matched' id='252-258'>)</span></span><span class='Matched' id='242-260'>,</span> <span class='IntImm Imm' id='242-262'>(int64)2147483647</span><span class='Matched' id='242-264'>)</span></span><span class='Matched' id='215-266'>)</span></div>
+<div class='AssertStmt WrapLine' id='213-268'>
+<span class='Matched' id='269-272'><span class='Symbol' id='269-270'>assert</span>(</span><span class='BinaryOp' id='269-274'><span class='Matched' id='275-276'>(</span><span class='BinaryOp' id='275-278'><span class='Matched' id='279-280'>(</span><span class='Cast' id='279-282'><span class='Matched' id='283-284'><span class='Type' id='283-286'>int64</span>(</span><b class='Variable Matched' id='64-288'>gradient.extent.1</b><span class='Matched' id='283-289'>)</span></span> <span class='Operator Matched' id='279-291'>*</span> <span class='Cast' id='279-293'><span class='Matched' id='294-295'><span class='Type' id='294-297'>int64</span>(</span><b class='Variable Matched' id='299-300'>gradient.stride.1</b><span class='Matched' id='294-301'>)</span></span><span class='Matched' id='279-303'>)</span></span> <span class='Operator Matched' id='275-305'>&lt=</span> <span class='IntImm Imm' id='275-307'>(int64)2147483647</span><span class='Matched' id='275-309'>)</span></span><span class='Matched' id='269-311'>,</span> <span class='Call' id='269-313'><span class='Matched' id='314-317'><span class='Symbol' id='314-315'>halide_error_buffer_allocation_too_large</span>(</span><span class='StringImm' id='314-319'>"gradient"</span><span class='Matched' id='314-321'>,</span> <span class='BinaryOp' id='314-323'><span class='Matched' id='324-325'>(</span><span class='Cast' id='324-327'><span class='Matched' id='328-329'><span class='Type' id='328-331'>int64</span>(</span><b class='Variable Matched' id='64-333'>gradient.extent.1</b><span class='Matched' id='328-334'>)</span></span> <span class='Operator Matched' id='324-336'>*</span> <span class='Cast' id='324-338'><span class='Matched' id='339-340'><span class='Type' id='339-342'>int64</span>(</span><b class='Variable Matched' id='299-344'>gradient.stride.1</b><span class='Matched' id='339-345'>)</span></span><span class='Matched' id='324-347'>)</span></span><span class='Matched' id='314-349'>,</span> <span class='IntImm Imm' id='314-351'>(int64)2147483647</span><span class='Matched' id='314-353'>)</span></span><span class='Matched' id='269-355'>)</span></div>
+<div class='AssertStmt WrapLine' id='213-357'>
+<span class='Matched' id='358-361'><span class='Symbol' id='358-359'>assert</span>(</span><span class='BinaryOp' id='358-363'><span class='Matched' id='364-365'>(</span><b class='Variable Matched' id='176-367'>gradient.total_extent.1</b> <span class='Operator Matched' id='364-368'>&lt=</span> <span class='IntImm Imm' id='364-370'>(int64)2147483647</span><span class='Matched' id='364-372'>)</span></span><span class='Matched' id='358-374'>,</span> <span class='Call' id='358-376'><span class='Matched' id='377-380'><span class='Symbol' id='377-378'>halide_error_buffer_extents_too_large</span>(</span><span class='StringImm' id='377-382'>"gradient"</span><span class='Matched' id='377-384'>,</span> <b class='Variable Matched' id='176-386'>gradient.total_extent.1</b><span class='Matched' id='377-387'>,</span> <span class='IntImm Imm' id='377-389'>(int64)2147483647</span><span class='Matched' id='377-391'>)</span></span><span class='Matched' id='358-393'>)</span></div>
+<div class='LetStmt' id='213-396'>
+<p class=WrapLine><span class='Matched' id='397-398'><span class='Keyword' id='399-400'>let</span> <b class='Variable Matched' id='395-402'>pipeline.trace_id</b></span> <span class='Operator Assign Matched' id='397-403'>=</span> <span class='Call' id='397-405'><span class='Matched' id='406-409'><span class='Symbol' id='406-407'>trace</span>(</span><span class='StringImm' id='406-411'>""</span><span class='Matched' id='406-413'>,</span> <span class='IntImm Imm' id='406-415'>8</span><span class='Matched' id='406-417'>,</span> <span class='IntImm Imm' id='406-419'>0</span><span class='Matched' id='406-421'>,</span> <span class='IntImm Imm' id='406-423'>0</span><span class='Matched' id='406-425'>,</span> <span class='IntImm Imm' id='406-427'>0</span><span class='Matched' id='406-429'>)</span></span></p><div class='Block' id='397-431'>
+<div class='Produce' id='432-434'>
+<span class='Matched' id='435-437'><a class=ExpandButton onclick='return toggle(436);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=436-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=436-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Keyword' id='438-439'>produce</span> <b class='Variable Matched' id='433-441'>gradient</b></a> {</span><div class='ProduceBody Indent' id='436'>
+<div class='For' id='442-444'>
+<a class=ExpandButton onclick='return toggle(446);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=446-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=446-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Matched' id='445-447'><span class='Keyword' id='448-449'>for</span> (</span><b class='Variable Matched' id='443-451'>gradient.s0.y</b><span class='Matched' id='445-452'>,</span> <b class='Variable Matched' id='60-454'>gradient.min.1</b><span class='Matched' id='445-455'>,</span> <b class='Variable Matched' id='64-457'>gradient.extent.1</b><span class='Matched' id='445-458'>)</span></a> <span class='Matched' id='445-460'>{</span><div class='ForBody Indent' id='446'>
+<div class='For' id='462-464'>
+<a class=ExpandButton onclick='return toggle(466);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=466-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=466-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Matched' id='465-467'><span class='Keyword' id='468-469'>for</span> (</span><b class='Variable Matched' id='463-471'>gradient.s0.x</b><span class='Matched' id='465-472'>,</span> <b class='Variable Matched' id='48-474'>gradient.min.0</b><span class='Matched' id='465-475'>,</span> <b class='Variable Matched' id='52-477'>gradient.extent.0</b><span class='Matched' id='465-478'>)</span></a> <span class='Matched' id='465-480'>{</span><div class='ForBody Indent' id='466'>
+<div class='Store WrapLine' id='482-483'>
+<span class='Matched' id='484-485'><b class='Variable Matched' id='433-487'>gradient</b>[</span><span class='BinaryOp' id='484-488'><span class='Matched' id='489-490'>(</span><span class='BinaryOp' id='489-492'><span class='Matched' id='493-494'>(</span><b class='Variable Matched' id='463-496'>gradient.s0.x</b> <span class='Operator Matched' id='493-497'>+</span> <span class='BinaryOp' id='493-499'><span class='Matched' id='500-501'>(</span><b class='Variable Matched' id='443-503'>gradient.s0.y</b> <span class='Operator Matched' id='500-504'>*</span> <b class='Variable Matched' id='299-506'>gradient.stride.1</b><span class='Matched' id='500-507'>)</span></span><span class='Matched' id='493-509'>)</span></span> <span class='Operator Matched' id='489-511'>-</span> <span class='BinaryOp' id='489-513'><span class='Matched' id='514-515'>(</span><b class='Variable Matched' id='48-517'>gradient.min.0</b> <span class='Operator Matched' id='514-518'>+</span> <span class='BinaryOp' id='514-520'><span class='Matched' id='521-522'>(</span><b class='Variable Matched' id='60-524'>gradient.min.1</b> <span class='Operator Matched' id='521-525'>*</span> <b class='Variable Matched' id='299-527'>gradient.stride.1</b><span class='Matched' id='521-528'>)</span></span><span class='Matched' id='514-530'>)</span></span><span class='Matched' id='489-532'>)</span></span><span class='Matched' id='484-534'>]</span> <span class='Operator Assign Matched' id='484-536'>=</span> <span class='StoreValue' id='484-538'><span class='Call' id='539-540'><span class='Matched' id='541-544'><span class='Symbol' id='541-542'>trace_expr</span>(</span><span class='StringImm' id='541-546'>"gradient"</span><span class='Matched' id='541-548'>,</span> <span class='IntImm Imm' id='541-550'>1</span><span class='Matched' id='541-552'>,</span> <span class='IntImm Imm' id='541-554'>0</span><span class='Matched' id='541-556'>,</span> <span class='IntImm Imm' id='541-558'>0</span><span class='Matched' id='541-560'>,</span> <span class='BinaryOp' id='541-562'><span class='Matched' id='563-564'>(</span><b class='Variable Matched' id='463-566'>gradient.s0.x</b> <span class='Operator Matched' id='563-567'>+</span> <b class='Variable Matched' id='443-569'>gradient.s0.y</b><span class='Matched' id='563-570'>)</span></span><span class='Matched' id='541-572'>,</span> <b class='Variable Matched' id='463-574'>gradient.s0.x</b><span class='Matched' id='541-575'>,</span> <b class='Variable Matched' id='443-577'>gradient.s0.y</b><span class='Matched' id='541-578'>)</span></span></span></div>
+</div>
+<span class='Matched' id='465-580'>}</span></div>
+</div>
+<span class='Matched' id='445-582'>}</span></div>
+</div>
+<span class='Matched' id='435-584'>}</span></div>
+<div class='Evaluate' id='432-586'>
+<span class='IntImm Imm' id='587-588'>0</span></div>
+<div class='Evaluate' id='432-590'>
+<span class='Call' id='591-592'><span class='Matched' id='593-596'><span class='Symbol' id='593-594'>trace</span>(</span><span class='StringImm' id='593-598'>""</span><span class='Matched' id='593-600'>,</span> <span class='IntImm Imm' id='593-602'>9</span><span class='Matched' id='593-604'>,</span> <b class='Variable Matched' id='395-606'>pipeline.trace_id</b><span class='Matched' id='593-607'>,</span> <span class='IntImm Imm' id='593-609'>0</span><span class='Matched' id='593-611'>,</span> <span class='IntImm Imm' id='593-613'>0</span><span class='Matched' id='593-615'>)</span></span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<span class='Matched' id='74-617'>}</span></div>
+</div>
+</div>
+<span class='Matched' id='3-619'>}</span></div>
+<div class='Function' id='0-622'>
+<a class=ExpandButton onclick='return toggle(624);' href=_blank><div style='position:relative; width:0; height:0;'><div class=ShowHide style='display:none;' id=624-show><i class='fa fa-plus-square-o'></i></div><div class=ShowHide id=624-hide><i class='fa fa-minus-square-o'></i></div></div><span class='Matched' id='623-625'><span class='Keyword' id='626-627'>func</span> gradient(</span><b class='Variable Matched' id='621-629'>gradient</b><span class='Matched' id='623-630'>)</span></a> <span class='Matched' id='623-632'>{</span><div class='FunctionBody Indent' id='624'>
+<div class='LetStmt' id='634-636'>
+<p class=WrapLine><span class='Matched' id='637-638'><span class='Keyword' id='639-640'>let</span> <b class='Variable Matched' id='635-642'>__gradient_result$1</b></span> <span class='Operator Assign Matched' id='637-643'>=</span> <span class='Call' id='637-645'><span class='Matched' id='646-649'><span class='Symbol' id='646-647'>__gradient</span>(</span><b class='Variable Matched' id='40-651'>gradient.buffer</b><span class='Matched' id='646-652'>)</span></span></p><div class='AssertStmt WrapLine' id='637-654'>
+<span class='Matched' id='655-658'><span class='Symbol' id='655-656'>assert</span>(</span><span class='BinaryOp' id='655-660'><span class='Matched' id='661-662'>(</span><b class='Variable Matched' id='635-664'>__gradient_result$1</b> <span class='Operator Matched' id='661-665'>==</span> <span class='IntImm Imm' id='661-667'>0</span><span class='Matched' id='661-669'>)</span></span><span class='Matched' id='655-671'>,</span> <b class='Variable Matched' id='635-673'>__gradient_result$1</b><span class='Matched' id='655-674'>)</span></div>
+</div>
+</div>
+<span class='Matched' id='623-676'>}</span></div>
+<script>
+$( '.Matched' ).each( function() {
+    this.onmouseover = function() { $('.Matched[id^=' + this.id.split('-')[0] + '-]').addClass('Highlight'); }
+    this.onmouseout = function() { $('.Matched[id^=' + this.id.split('-')[0] + '-]').removeClass('Highlight'); }
+} );
+</script>
+</body>

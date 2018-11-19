@@ -21,10 +21,12 @@ void tutorial_03()
     Func gradient("gradient");
     Var x("x"), y("y");
     gradient(x, y) = x + y;
+    gradient.trace_stores();
 
     // Realize the function to produce an output image. We'll keep it
     // very small for this lesson.
     Buffer<int> output = gradient.realize(8, 8);
+
 
     // That line compiled and ran the pipeline. Try running this
     // lesson with the environment variable HL_DEBUG_CODEGEN set to
@@ -42,7 +44,7 @@ void tutorial_03()
     // supports syntax highlighting and code-folding, so it can be
     // nicer to read for large pipelines. Open gradient.html with your
     // browser after running this tutorial.
-    gradient.compile_to_lowered_stmt("tutorial_02_gradient.html", {}, HTML);
+    gradient.compile_to_lowered_stmt("tutorial_03_gradient.html", {}, HTML);
 
-    printf("tutorial_03 success!\n");
+    // printf("tutorial_03 success!\n");
 }
