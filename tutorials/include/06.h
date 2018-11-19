@@ -9,7 +9,7 @@
 
 // http://halide-lang.org/tutorials/tutorial_lesson_06_realizing_over_shifted_domains.html
 
-void tutorial_05()
+void tutorial_06()
 {
     using namespace Halide;
 
