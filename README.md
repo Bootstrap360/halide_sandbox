@@ -25,8 +25,7 @@ This project is to learn how to use halide
 
 add the following to the image
 
-        apt-get install libav-tools
-        apt-get install imagemagick
-        apt-get install gifsicle
+        apt-get update && \
+        apt-get install libav-tools imagemagick gifsicle -y
 
     

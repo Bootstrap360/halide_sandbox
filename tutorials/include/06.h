@@ -91,6 +91,6 @@ void tutorial_06()
     // What if we want to evaluate our Func over some region that
     // isn't rectangular? Too bad. Halide only does rectangles :)
 
-    printf("Tutorial 5 Success!\n");
+    printf("Tutorial 6 Success!\n");
 
 }
