@@ -58,32 +58,31 @@ int main()
 {
 
     Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
-    // Halide::Buffer<uint8_t> output;
+    Halide::Buffer<uint8_t> output;
     
     Halide::Var x, y, c, i, ii, xo, yo, xi, yi, tile_index;
-
-    
-    Halide::Func inputFunc("inputFunc");
+    Halide::Func inputFunc("input");
     inputFunc(x, y, c) = input(x, y, c);
-    // inputFunc.trace_loads();
+    inputFunc.trace_loads();
+
 
     Halide::Expr value = inputFunc(x, y, c);
     value = Halide::cast<float>(value);
-    value = value * 1.5f;
+    value = HalideCV::scale(value, 1.5f);
     value = Halide::min(value, 255.0f);
     value = Halide::cast<uint8_t>(value);
 
     uint width = input.width();
     uint height = input.height();
 
-    // {
-    //     Halide::Func scale("simple_xyc");
-    //     scale(x, y, c) = value;
-    //     scale.trace_stores();
-    //     Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
-    //     // timeit(scale, output, "simple");
+    {
+        Halide::Func scale("simple_xyc");
+        scale(x, y, c) = value;
+        scale.trace_stores();
+        Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
+        // timeit(scale, output, "simple");
 
-    // }
+    }
 
     // {
     //     Halide::Func scale("reorder_yxc");
@@ -118,7 +117,7 @@ int main()
         scale.fuse(x_outer, y_outer, tile_index);
         scale.parallel(tile_index);
 
-        Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
+        output = scale.realize(width, height, input.channels());
         // timeit(scale, output, "tile_fuse_parallel");
 
     }

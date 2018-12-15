@@ -4,7 +4,7 @@
 
 #include <string>
 
-namespace halidecv
+namespace HalideCV
 {
 
 
@@ -19,6 +19,11 @@ namespace halidecv
         value = Halide::cast<uint8_t>(value);
         scale_func(x, y, c) = value;
         return scale_func;
+    }
+
+    Halide::Expr scale(Halide::Expr& value, float factor)
+    {
+        return value * factor;
     }
 
 
