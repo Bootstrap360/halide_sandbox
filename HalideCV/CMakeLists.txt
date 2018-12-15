@@ -4,15 +4,14 @@ set (CMAKE_CXX_STANDARD 11)
 set ( TARGET demo)
 project ( ${TARGET} )
 
-set ( HALIDE_SOURCE_DIRECTORY "/home/ubuntu/repositories/halide_build" )
-set ( HALIDE_LIB_DIRECTORY "/home/ubuntu/repositories/halide_build/lib" )
-set ( HALIDE_GIT "/home/ubuntu/repositories/Halide" )
+set ( HALIDE_SOURCE_DIRECTORY "$ENV{HOME}/repositories/halide_build" )
+set ( HALIDE_LIB_DIRECTORY "$ENV{HOME}/repositories/halide_build/lib" )
+set ( HALIDE_GIT "$ENV{HOME}/repositories/Halide" )
 
 
 file(GLOB_RECURSE SOURCES 
     "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" 
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" 
-    "${HALIDE_GIT}/tools"
     "${HALIDE_GIT}/tools")
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")

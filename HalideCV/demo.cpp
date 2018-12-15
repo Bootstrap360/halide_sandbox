@@ -57,7 +57,7 @@ void timeit( Halide::Func &func, Halide::Buffer<uint8_t> &buff, const std::strin
 int main()
 {
 
-    Halide::Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
+    Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;
     
     Halide::Var x, y, c, i, ii, xo, yo, xi, yi, tile_index;
@@ -76,15 +76,14 @@ int main()
     uint width = input.width();
     uint height = input.height();
 
-    {
-        Halide::Func scale("simple");
-        scale(x, y, c) = value;
-        // scale.trace_stores();
-        scale.reorder(y, x, c);
-        Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
-        timeit(scale, output, "simple");
+    // {
+    //     Halide::Func scale("simple_xyc");
+    //     scale(x, y, c) = value;
+    //     scale.trace_stores();
+    //     Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
+    //     // timeit(scale, output, "simple");
 
-    }
+    // }
 
     // {
     //     Halide::Func scale("reorder_yxc");
@@ -113,46 +112,46 @@ int main()
     {
         Halide::Func scale("tile_fuse_parallel");
         scale(x, y, c) = value;
-        // scale.trace_stores();
+        scale.trace_stores();
         Var x_outer, y_outer, x_inner, y_inner, tile_index;
         scale.tile(x, y, x_outer, y_outer, x_inner, y_inner, 128, 128);
         scale.fuse(x_outer, y_outer, tile_index);
         scale.parallel(tile_index);
 
-        Halide::Buffer<uint8_t>output = scale.realize(width, height, input.channels());
-        timeit(scale, output, "tile_fuse_parallel");
-
-    }
-
-    {
-        Halide::Func scale("my_gpu");
-        scale(x, y, c) = value;
-        // scale.trace_stores();
-        scale.gpu_tile(x, y, xo, yo, xi, yi, 8, 8);
-
-        // Construct a target that uses the GPU.
-        Halide::Target target = Halide::get_host_target();
-        // Halide::Target target = find_gpu_target();
-        printf("Target: %s\n", target.to_string().c_str());
-
-        // Enable OpenCL as the GPU backend.
-        target.set_feature(Halide::Target::CUDA);
-        // target.set_feature(Halide::Target::OpenCL);
-
-        // Enable debugging so that you can see what OpenCL API calls we do.
-        target.set_feature(Halide::Target::Debug);
-        printf("Target: %s\n", target.to_string().c_str());
-
-        // JIT-compile the pipeline.
-        scale.compile_jit(target);
-
         Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
+        // timeit(scale, output, "tile_fuse_parallel");
 
-        timeit(scale, output, "GPU_128x_128");
-
-
-        save_image(output, "output_gpu.png");
     }
+
+    // {
+    //     Halide::Func scale("my_gpu");
+    //     scale(x, y, c) = value;
+    //     // scale.trace_stores();
+    //     scale.gpu_tile(x, y, xo, yo, xi, yi, 8, 8);
+
+    //     // Construct a target that uses the GPU.
+    //     Halide::Target target = Halide::get_host_target();
+    //     // Halide::Target target = find_gpu_target();
+    //     printf("Target: %s\n", target.to_string().c_str());
+
+    //     // Enable OpenCL as the GPU backend.
+    //     target.set_feature(Halide::Target::CUDA);
+    //     // target.set_feature(Halide::Target::OpenCL);
+
+    //     // Enable debugging so that you can see what OpenCL API calls we do.
+    //     target.set_feature(Halide::Target::Debug);
+    //     printf("Target: %s\n", target.to_string().c_str());
+
+    //     // JIT-compile the pipeline.
+    //     scale.compile_jit(target);
+
+    //     Halide::Buffer<uint8_t> output = scale.realize(width, height, input.channels());
+
+    //     // timeit(scale, output, "GPU_128x_128");
+
+
+    //     // save_image(output, "output_gpu.png");
+    // }
 
 
 }
