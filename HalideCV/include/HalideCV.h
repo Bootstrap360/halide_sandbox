@@ -26,5 +26,29 @@ namespace HalideCV
         return value * factor;
     }
 
+    // Halide::Func remap( Halide::Func& src, Halide::Func& dest, Halide::Func& map_x, Halide::Func& map_y , Var& x, Var& y, Var& c)
+    // {
+    //     dest(x, y, c) = src( map_x(x,y), map_y(x, y), c);
+    //     return dest;
+    // }
+
+    Halide::Func remap( const Halide::Func& src, Halide::Func& dest, const Halide::Func& map_x, const Halide::Func& map_y , Var& x, Var& y, Var& c)
+    {
+        dest(x, y, c) = src( map_x(x,y), map_y(x, y), c);
+        return dest;
+    }
+
+    void remap( const Halide::Func& src, Halide::Func& dest, const Halide::Func& map_x, const Halide::Func& map_y , Var& x, Var& y)
+    {
+        dest(x, y) = src( map_x(x,y), map_y(x, y));
+        // dest(x, y) = 1;
+    }
+
+    // Halide::Func remap( Halide::Func& src, Halide::Func& dest, const Halide::Buffer<uint8_t>& map_x, const Halide::Buffer<uint8_t>& map_y , Var& x, Var& y, Var& c)
+    // {
+    //     dest(x, y, c) = src( map_x(x,y), map_y(x, y), c);
+    //     return dest;
+    // }
+
 
 }
