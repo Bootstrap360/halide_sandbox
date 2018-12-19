@@ -59,7 +59,7 @@ void populateMaps( Halide::Func& map_x, Halide::Func& map_y)
     
 }
 
-void demoRemap()
+void simple()
 {
     Var x("x"), y("y");
     Func f("f"), g("g");
@@ -74,10 +74,61 @@ void demoRemap()
 
 }
 
+void indexing_histogram()
+{
+    Var x("x"), y("y"), i("i"), u("u"), v("v");
+
+    // Create an input with random values.
+    Buffer<uint8_t> input(8, 8, "input");
+    for (int y = 0; y < 8; ++y) {
+        for (int x = 0; x < 8; ++x) {
+            input(x, y) = (rand() % 256);
+        }
+    }
+
+    Func histogram("hist_serial");
+    histogram(i) = 0;
+    RDom r(0, input.width(), 0, input.height());
+    histogram(input(r.x, r.y) / 32) += 1;
+
+    histogram.vectorize(i, 8);
+    histogram.realize(8);
+
+}
+
+void indexing_map()
+{
+
+    // Create an input with random values.
+    Buffer<uint8_t> input(8, 8, "input");
+    Buffer<uint8_t> mapx(8, 8, "mapx");
+    Buffer<uint8_t> mapy(8, 8, "mapy");
+
+    for (int i = 0; i < 8; ++i) {
+        for (int j = 0; j < 8; ++j) {
+            input(j, i) = j * (255 / 8);
+            mapx(j, i) = (rand() % input.width());
+            mapy(j, i) = (rand() % input.height());
+        }
+    }
+
+    Var x("x"), y("y"), i("i"), u("u"), v("v");
+
+    Func rmap_out("rmap_out");
+    RDom r(0, mapx.width(), 0, mapx.height());
+    // rmap_out(r.x, r.y) = input(print(select(mapx(r.x,r.y) >= 8, 0, 0)), 0);
+    rmap_out(x, y) = input( clamp(mapx(x, y), 0, input.width() -1 ), clamp(mapy(x, y), 0, input.height() -1 ));
+
+    rmap_out.realize(8,8);
+    rmap_out.compile_to_lowered_stmt("rmap_out.html", {}, HTML);
+
+}
+
 int main()
 {
 
-    demoRemap();
+    indexing_histogram();
+    indexing_map();
 
     // Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;

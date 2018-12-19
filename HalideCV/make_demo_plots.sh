@@ -20,11 +20,26 @@ echo "Generating Videos"
 
 img_width=$(( 32 * 16 * 2 + 32 * 2))
 img_height=$(( 32 * 16 * 2 + 32 * 2))
+
 cat tmp/trace.bin | ~/repositories/halide_sandbox/util/build/HalideTraceViz --size ${img_width} ${img_height} --timestep 1 --decay 2 300 --zoom 32 --hold 50 \
---gray --min 0 --max 32 \
---func "f" \
---move  $((32 * 5)) 0 --func g |
-avconv -f rawvideo -pix_fmt bgr32 -s ${img_width}x${img_height} -i /dev/stdin -c:v h264 tmp/rmap.mp4 
+--gray --min 0 --max 256 --uninit 100 100 100 \
+--move 0 0 --func 'rmap_out:input' \
+--right  $((32 * 9)) --func 'rmap_out' | \
+avconv -f rawvideo -pix_fmt bgr32 -s ${img_width}x${img_height} -i /dev/stdin -c:v h264 tmp/hist_serial.mp4 
+
+# cat tmp/trace.bin | ~/repositories/halide_sandbox/util/build/HalideTraceViz --size ${img_width} ${img_height} --timestep 1 --decay 2 300 --zoom 32 --hold 50 \
+# --gray --min 0 --max 256 \
+# --func 'hist_serial:input' \
+# --move  $((32 * 9)) 0 --func 'hist_serial' \
+# --right $((32 * 9)) --func 'rmap_out:input' \
+# --zoom 32 --right $((32 * 9)) --func 'rmap_out' |
+# avconv -f rawvideo -pix_fmt bgr32 -s ${img_width}x${img_height} -i /dev/stdin -c:v h264 tmp/hist_serial.mp4 
+
+# cat tmp/trace.bin | ~/repositories/halide_sandbox/util/build/HalideTraceViz --size ${img_width} ${img_height} --timestep 1 --decay 2 300 --zoom 32 --hold 50 \
+# --gray --min 0 --max 32 \
+# --func "f" \
+# --move  $((32 * 5)) 0 --func g |
+# avconv -f rawvideo -pix_fmt bgr32 -s ${img_width}x${img_height} -i /dev/stdin -c:v h264 tmp/simple.mp4 
 
 # cat tmp/trace.bin | ~/repositories/halide_sandbox/util/build/HalideTraceViz --size ${img_width} ${img_height} --timestep 10 --decay 2 300 --zoom 32 \
 # --gray --min 0 --max 32 --uninit 16 16 16\
