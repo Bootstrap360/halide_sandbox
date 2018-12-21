@@ -81,7 +81,7 @@ void indexing_histogram()
     Var x("x"), y("y"), i("i"), u("u"), v("v");
 
     // Create an input with random values.
-    Buffer<uint8_t> input(8, 8, "input");
+    Buffer<uint8_t> input(8, 8, "histogram_input");
     for (int y = 0; y < input.height(); ++y) {
         for (int x = 0; x < input.width(); ++x) {
             input(x, y) = (rand() % 256);
@@ -98,49 +98,101 @@ void indexing_histogram()
 
 }
 
-void indexing_map()
+void remap_floor()
 {
+    // This method truncates the indexes of mapx and mapy to int32s.
 
-    // Create an input with random values.
-    Buffer<uint8_t> input(256, 256, "input");
-    Buffer<uint8_t> output(input.width(), input.height(), "output");
+    // Create read input from disk
+    Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
     Buffer<int32_t> mapx(input.width(), input.height(), "mapx");
     Buffer<int32_t> mapy(input.width(), input.height(), "mapy");
 
+    // create a map that flips vertically and horizontally
+    int noise = 16;
     for (int i = 0; i < input.height(); ++i) {
         for (int j = 0; j < input.width(); ++j) {
-            input(j, i) = double(j + i) / double(input.width() + input.height()) * 255.0;
-            mapx(j, i) = (input.width() - j);
-            mapy(j, i) = (input.height() - i);
+            mapx(j, i) = (input.width() - j + (rand() % noise) - noise / 2 );
+            mapy(j, i) = (input.height() - i + (rand() % noise) - noise / 2 );
         }
     }
 
-    Var x("x"), y("y"), i("i"), u("u"), v("v");
+    Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
 
     Func rmap_out("rmap_out");
     Func rmap_in("rmap_in");
 
-    rmap_in(x, y) = input(x,y);
-    RDom r(0, mapx.width(), 0, mapx.height());
-    // rmap_out(r.x, r.y) = input(print(select(mapx(r.x,r.y) >= 8, 0, 0)), 0);
-    // rmap_out(x, y) = rmap_in( clamp(mapx(x, y), 0, input.width() -1 ), clamp(mapy(x, y), 0, input.height() -1 ));
-    HalideCV::remap(rmap_out, rmap_in, mapx, mapy, x, y, input.width(), input.height());
+    // First, add a boundary condition to the input.
+    Func clamped;
+    Expr x_clamped = clamp(x, 0, input.width()-1);
+    Expr y_clamped = clamp(y, 0, input.height()-1);
+    clamped(x, y, c) = input(x_clamped, y_clamped, c);
 
-    Var x_outer, y_outer, x_inner, y_inner, tile_index;
-    rmap_out.tile(x, y, x_outer, y_outer, x_inner, y_inner, 64, 64);
-    rmap_out.fuse(x_outer, y_outer, tile_index);
-    rmap_out.parallel(tile_index);
-    rmap_out.realize(input.width(), input.height());
-    rmap_out.compile_to_lowered_stmt("rmap_out.html", {}, HTML);
+    rmap_out(x, y, c) = clamped( mapx(x, y), clamp( mapy(x, y), 0, input.height() -1 ), c);
+    rmap_out.realize( input.width(), input.height(), input.channels() );
 
+}
+
+void remap()
+{
+    // This method truncates the indexes of mapx and mapy to int32s.
+    
+    // Create read input from disk
+    Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
+    Buffer<float> mapx(input.width(), input.height(), "mapx");
+    Buffer<float> mapy(input.width(), input.height(), "mapy");
+
+    // create a map that flips vertically and horizontally
+    int noise = 16;
+    float noiseAmplitude = 3;
+    for (int i = 0; i < input.height(); ++i) {
+        for (int j = 0; j < input.width(); ++j) {
+            mapx(j, i) = (j + (((rand() % 255)/255.0 - 0.5) * noiseAmplitude) );
+            mapy(j, i) = (i + (((rand() % 255)/255.0 - 0.5) * noiseAmplitude) );
+        }
+    }
+
+    Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
+
+    Func rmap_out("rmap_out");
+    Func rmap_in("rmap_in");
+
+    // First, add a boundary condition to the input.
+    Func clamped("float_clamped");
+    Expr x_clamped = clamp(x, 0, input.width()-1);
+    Expr y_clamped = clamp(y, 0, input.height()-1);
+    clamped(x, y, c) = input(x_clamped, y_clamped, c);
+
+    // rmap_out(x, y, c) = clamped( mapx(x, y), clamp( mapy(x, y), 0, input.height() -1 ), c);
+    clamped.realize( input.width(), input.height(), input.channels() );
+
+}
+
+void derivative()
+{
+
+    // Create an input with random values.
+    Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
+
+    Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
+    Func derivative("derivative");
+    
+    Func clamped;
+    Expr x_clamped = clamp(x, 0, input.width()-1);
+    Expr y_clamped = clamp(y, 0, input.height()-1);
+    clamped(x, y, c) = input(x_clamped, y_clamped, c);
+
+    derivative(x, y, c) = clamped( x + 1, y , c ) - clamped(x - 1, y , c );
+    derivative.realize( 256, 256, input.channels() );
 
 }
 
 int main()
 {
 
-    indexing_histogram();
-    indexing_map();
+    // indexing_histogram();
+    // remap_floor();
+    // derivative();
+    remap();
 
     // Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;

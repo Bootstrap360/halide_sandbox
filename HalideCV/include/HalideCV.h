@@ -38,10 +38,9 @@ namespace HalideCV
         return dest;
     }
 
-    void remap( Halide::Func& src, Halide::Func& dest, Halide::Buffer<int>& map_x, Halide::Buffer<int>& map_y , Var& x, Var& y, uint width, uint height)
+    void remap( Halide::Func& rmap_in, Halide::Func& rmap_out, Halide::Buffer<int>& map_x, Halide::Buffer<int>& map_y , Var& x, Var& y, Var& width, Var& height)
     {
-        // dest(x, y) = src( clamp( map_x(x, y), 0, width -1 ), clamp( map_y(x, y), 0, height -1 ) );
-        dest(x, y) = src( clamp(map_x(x, y), 0, width -1 ), clamp(map_y(x, y), 0, height -1 ));
+        rmap_out(x, y) = rmap_in( clamp(map_x(x, y), 0, width -1 ), clamp(map_y(x, y), 0, height -1 ));
     }
 
     // Halide::Func remap( Halide::Func& src, Halide::Func& dest, const Halide::Buffer<uint8_t>& map_x, const Halide::Buffer<uint8_t>& map_y , Var& x, Var& y, Var& c)
