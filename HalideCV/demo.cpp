@@ -119,7 +119,6 @@ void remap_floor()
     Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
 
     Func rmap_out("rmap_out");
-    Func rmap_in("rmap_in");
 
     // First, add a boundary condition to the input.
     Func clamped;
@@ -154,7 +153,6 @@ void remap()
     Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
 
     Func rmap_out("rmap_out");
-    Func rmap_in("rmap_in");
 
     // First, add a boundary condition to the input.
     Func clamped("float_clamped");
@@ -164,6 +162,92 @@ void remap()
 
     // rmap_out(x, y, c) = clamped( mapx(x, y), clamp( mapy(x, y), 0, input.height() -1 ), c);
     clamped.realize( input.width(), input.height(), input.channels() );
+
+}
+
+void blur_kernel()
+{
+    //int W = 64*3, H = 64*3;
+    const int W = 128, H = 48;
+
+    Buffer<uint8_t> in(W, H);
+    for (int y = 0; y < H; y++) {
+        for (int x = 0; x < W; x++) {
+            if(x > W / 2)
+            {
+                in(x, y) = (255);
+            }
+            else
+            {
+                in(x, y) = 0;
+            }
+        }
+    }
+
+    Var x("x"), y("y"), c("c");
+
+    Buffer<float> tent(3, 3);
+    tent(0, 0) = 1;
+    tent(0, 1) = 2;
+    tent(0, 2) = 1;
+    tent(1, 0) = 2;
+    tent(1, 1) = 4;
+    tent(1, 2) = 2;
+    tent(2, 0) = 1;
+    tent(2, 1) = 2;
+    tent(2, 2) = 1;
+
+    Func input("input");
+    input(x, y) = in(clamp(x, 0, in.width()-1), clamp(y, 0, in.height()-1));
+    input.compute_root();
+
+    RDom r(tent);
+
+    Func blur1("blur1");
+    blur1(x, y) += tent(r.x, r.y) * input(x + r.x - 1, y + r.y - 1);
+    blur1.realize(in.width(), in.height());
+
+}
+
+Exp gauss(RDom r, Exp sigma)
+{
+    return exp2( - ( pow( r.x, 2 ) + pow(r.y, 2.0) ) / ( 2.0 * pow( sigma, 2)  )
+}
+
+void blur_kernel2()
+{
+    //int W = 64*3, H = 64*3;
+    const int W = 128, H = 48;
+
+    Buffer<uint8_t> in(W, H);
+    for (int y = 0; y < H; y++) {
+        for (int x = 0; x < W; x++) {
+            if(x > W / 2)
+            {
+                in(x, y) = (255);
+            }
+            else
+            {
+                in(x, y) = 0;
+            }
+        }
+    }
+
+    Var x("x"), y("y"), c("c");
+    
+
+    Func input("input");
+    input(x, y) = in(clamp(x, 0, in.width()-1), clamp(y, 0, in.height()-1));
+    input.compute_root();
+
+    RDom r(5,5);
+    Func kern("kern");
+
+    kern(r.x, r.y) = exp2( -( pow( r.x, 2 ) + pow(r.y, 2.0) )  )
+
+    Func blur1("blur1");
+    blur1(x, y) += tent(r.x, r.y) * input(x + r.x - 1, y + r.y - 1);
+    blur1.realize(in.width(), in.height());
 
 }
 
@@ -192,7 +276,8 @@ int main()
     // indexing_histogram();
     // remap_floor();
     // derivative();
-    remap();
+    blur_kernel();
+    // remap();
 
     // Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;
