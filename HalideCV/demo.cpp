@@ -13,6 +13,10 @@ using namespace Halide::Tools;
 const std::string image_dir = "/home/glen/repositories/halide_sandbox/images/rgb.png";
 
 
+#define PRINT(v, a ) print( v(a), std::string(#v) + std::string("("), a, ")", std::string( "[") + std::to_string(__LINE__) + std::string("]") ) ;
+#define SHOW(a) std::cout << "[" << __LINE__ <<"] " << #a << " = " << a << std::endl;
+
+
 double current_time() {
     static bool first_call = true;
     static timeval reference_time;
@@ -135,120 +139,96 @@ void remap_floor()
 
 }
 
-void remap_1D_1()
+void remap_1D()
 {
-    // This method truncates the indexes of mapx and mapy to int32s.
     std::cout << "remap_1D" << std::endl;
     // Create read input from disk
-    Buffer<uint8_t> input(2, "input");
-    Buffer<uint8_t> output(input.width() - 1, "output");
-    Buffer<float> map_x(output.width(), "mapx");
-
-    input(0) = 0;
-    input(1) = 1;
-
-    map_x(0) = 0.5;
-
     Var x("x");
+    Buffer<int> input(2, "input");
+    Buffer<int> map_x(2, "map_x");
 
-    Func rmap_out("rmap_out");
 
-    // First, add a boundary condition to the input.
-    Func clamped("float_clamped");
-    Func map_x_int;
-    map_x_int(x) = cast<int>(map_x(x));
+    input(0) = 1;
+    input(1) = 2;
 
-    map_x_int(x) = print(map_x_int(x), " map_xint(", x,")", std::to_string(__LINE__));
-    Func ta("ta"), tb("tb"), b("b"), m("m");
+    map_x(0) = 0;
+    map_x(1) = 1;
 
-    Expr x_clamped = clamp(x, 0, input.width()-1);
-    clamped(x) = input(x_clamped);
+    Buffer<int> output(1, "output");
 
-    ta(x) = clamped( map_x_int(x) );
-    tb(x) = clamped( map_x_int(x) + 1 );
+    Func f_input("f_input"), f_input_bounded("f_input_bounded");
+    Func f_map_x("f_map_x"), f_map_x_bounded("f_map_x_bounded");
+    Func out("out");
 
-    ta(x) = print(ta(x), " ta(", x, ")", std::to_string(__LINE__));
-    tb(x) = print(tb(x), " tb(", x, ")", std::to_string(__LINE__));
+    f_input(x) = input(x);
+    f_map_x(x) = map_x(x);
 
-    m(x) = tb(x) - ta(x);
-    m(x) = print(m(x), " m(", x, ")", std::to_string(__LINE__));
+    std::vector< std::pair< Expr, Expr> > boundaryCondition = { { Expr(0), input.dim(0).extent() } };
 
-    b(x) = ta(x) - m(x) * map_x_int(x);
+    f_input_bounded  = BoundaryConditions::constant_exterior(f_input, 0, { { Expr(0), input.dim(0).extent() } } );
+    f_map_x_bounded  = BoundaryConditions::constant_exterior(f_map_x, -1, { { Expr(0), map_x.dim(0).extent() } } );
 
-    b(x) = print(b(x), " b(", x, ")", std::to_string(__LINE__));
-    Func tmp;
-    tmp(x) = print(m(x) * map_x(x), "m(", x, ") * map_x(", x,")");
-    Func tmp2;
-    tmp2(x) = print(tmp(x) + b(x), "tmp(", x, ") + b(", x, ")");
-    rmap_out(x) = cast<int>(tmp2(x));
+    out(x) = f_input_bounded(f_map_x_bounded(x));
 
-    // Func tmp3;
-    // tmp3 = m(x) * map_x_int(x);
-    // tmp3.realize( 1 );
-
-    // for(auto o : output)
-    // {
-    //     std::cout << o << std::endl;
-    // }
+    output = out.realize(5);
+    
+    for(int i = 0; i < output.width(); ++i)
+    {
+        SHOW(output(i));
+    }
 
     std::cout << "Done " << __LINE__ << std::endl;
 
 }
 
-void remap_1D()
+void remap_1D_3()
 {
-    // This method truncates the indexes of mapx and mapy to int32s.
-    // This method truncates the indexes of mapx and mapy to int32s.
-    std::cout << "remap_1D" << std::endl;
+    std::cout << "remap_1D_2" << std::endl;
     // Create read input from disk
     Var x("x");
+    Buffer<int> input(2, "input");
+    Buffer<float> map_x(2, "map_x");
 
-    Buffer<uint8_t> input(2, "input");
-    Buffer<uint8_t> output(input.width() - 1, "output");
-    Buffer<float> map_x(output.width(), "mapx");
 
     input(0) = 0;
-    input(1) = 1;
+    input(1) = 10;
 
-    map_x(0) = 0.5;
+    map_x(0) = 0;
+    map_x(1) = 0.5;
 
+    Buffer<float> output(1, "output");
 
+    Func f_input("f_input"), f_input_bounded("f_input_bounded");
+    Func f_map_x("f_map_x"), f_map_x_bounded("f_map_x_bounded"), f_map_x_int_bounded("f_map_x_int_bounded");
+    Func alpha("alpha");
+    Func out("out");
 
-    // First, add a boundary condition to the input.
-    Func clamped("float_clamped");
-    Func rmap_out("rmap_out");
-    Func map_x_int;
-    map_x_int(x) = cast<int>( map_x(x) );
+    f_input(x) = input(x);
+    f_map_x(x) = map_x(x);
 
-    map_x_int(x) = print(map_x_int(x), " map_xint(", x,")", std::to_string(__LINE__));
-    map_x(x) = print(map_x(x), " map_x(", x,")", std::to_string(__LINE__));
-    Func alpha("alpha"), tmp("tmp"), lhs("lhs"), rhs("rhs");
+    std::vector< std::pair< Expr, Expr> > boundaryCondition = { { Expr(0), input.dim(0).extent() } };
 
-    Expr x_clamped = clamp(x, 0, 2);
-    clamped(x) = input(x_clamped);
-    clamped(x) = print(clamped(x), " clamped(", x,")", std::to_string(__LINE__));
+    f_input_bounded  = BoundaryConditions::constant_exterior(f_input, 0, { { Expr(0), input.dim(0).extent() } } );
+    f_map_x_bounded  = BoundaryConditions::constant_exterior(f_map_x, -10.0f, { { Expr(0), map_x.dim(0).extent() } } );
+    f_map_x_int_bounded(x) = cast<int>(f_map_x_bounded(x));
 
-    alpha(x) = map_x(x) - cast<float>(map_x_int(x));
-    alpha(x) = print(alpha(x), " alpha(", x,")", std::to_string(__LINE__));
+    alpha(x) = select( x < 0, 0.0f, f_map_x_bounded(x) - cast<float>(f_map_x_int_bounded(x)));
+
+    alpha(x) = PRINT(alpha, x );
+
+    Func beta("beta");
+    beta(x) = select( (x - 1) < 0, 0.0f, 1.0f - alpha(x) );
+    beta(x) = PRINT(beta, x );
+    // out(x) = f_input_bounded( f_map_x_int_bounded(x) ) * alpha(x) + f_input_bounded( f_map_x_int_bounded(x) + 1 ) * ( Expr(1.0) - alpha(x));
+    out(x) = f_input_bounded( f_map_x_int_bounded(x) ) * alpha(x) + f_input_bounded( f_map_x_int_bounded(x) + 1 ) * beta(x);
+    // out(x) = f_input_bounded( f_map_x_int_bounded(x) + 1); //+ (1.0f - alpha(x));
+
+    output = out.realize(5);
     
-
-    lhs(x) = clamped( clamp(map_x_int(x), 0, 1) ) * alpha(x);
-    lhs(x) = print(lhs(x), " lhs(", x,")", std::to_string(__LINE__));
-
-    rhs(x) = clamped( clamp(map_x_int(x) + 1, 0, 1) ) * (Expr(1.0) - alpha(x));
-    rhs(x) = print(rhs(x), " rhs(", x,")", std::to_string(__LINE__));
-
-    tmp(x) = lhs(x) + rhs(x);
-    tmp(x) = print(tmp(x), " tmp(", x,")", std::to_string(__LINE__));
-    // rmap_out(x) = cast<uint8_t>(tmp(x));
-    output = tmp.realize(1);
-
-    // for(int i = 0; i < )
-    // {
-    //     std::cout << "o = " << o << std::endl;
-    // }
-
-    std::cout << "output[0] = " << output(0) << std::endl;
+    for(int i = 0; i < output.width(); ++i)
+    {
+        SHOW(output(i));
+    }
 
     std::cout << "Done " << __LINE__ << std::endl;
 
@@ -468,7 +448,7 @@ int main()
     // derivative();
     // blur_kernel();
     // function_sandbox();
-    remap_1D();
+    remap_1D_3();
 
     // Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;
