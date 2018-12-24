@@ -4,6 +4,8 @@ set -e
 mkdir -p tmp
 rm -rf tmp/*
 
+rm *.jpg &
+
 echo "Making it"
 
 HL_JIT_TARGET=host-trace_all HL_TARGET=host-trace_all make -C build

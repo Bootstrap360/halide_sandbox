@@ -8,45 +8,22 @@ namespace HalideCV
 {
 
 
-    Halide::Func scale(const Halide::Buffer<uint8_t>& input, float factor, std::string name = "scale")
-    {
-        Halide::Func scale_func(name);
-        Halide::Var x, y, c;
-        Halide::Expr value = input(x, y, c);
-        value = Halide::cast<float>(value);
-        value = value * factor;
-        value = Halide::min(value, 255.0f);
-        value = Halide::cast<uint8_t>(value);
-        scale_func(x, y, c) = value;
-        return scale_func;
-    }
-
-    Halide::Expr scale(Halide::Expr& value, float factor)
+    Halide::Expr scale(Halide::Expr value, float factor)
     {
         return value * factor;
     }
 
-    // Halide::Func remap( Halide::Func& src, Halide::Func& dest, Halide::Func& map_x, Halide::Func& map_y , Var& x, Var& y, Var& c)
+    // Halide::Expr remap(Halide::Expr input, Halide::Expr map_x, Halide::Expr map_y)
     // {
-    //     dest(x, y, c) = src( map_x(x,y), map_y(x, y), c);
-    //     return dest;
-    // }
+    //     Func map_x_uint("map_x_uint"), map_y_uint("map_y_uint");
+    //     map_x_uint(x, y, c) = cast<uint>(map_x(x, y, c));
+    //     map_y_uint(x, y, c) = cast<uint>(map_y(x, y, c));
 
-    Halide::Func remap( const Halide::Func& src, Halide::Func& dest, const Halide::Func& map_x, const Halide::Func& map_y , Var& x, Var& y, Var& c)
-    {
-        dest(x, y, c) = src( map_x(x,y), map_y(x, y), c);
-        return dest;
-    }
+    //     Expr x_clamped = clamp(x, 0, input.width()-1);
+    //     Expr y_clamped = clamp(y, 0, input.height()-1);
+    //     clamped(x, y, c) = input(x_clamped, y_clamped, c);
 
-    void remap( Halide::Func& rmap_in, Halide::Func& rmap_out, Halide::Buffer<int>& map_x, Halide::Buffer<int>& map_y , Var& x, Var& y, Var& width, Var& height)
-    {
-        rmap_out(x, y) = rmap_in( clamp(map_x(x, y), 0, width -1 ), clamp(map_y(x, y), 0, height -1 ));
-    }
-
-    // Halide::Func remap( Halide::Func& src, Halide::Func& dest, const Halide::Buffer<uint8_t>& map_x, const Halide::Buffer<uint8_t>& map_y , Var& x, Var& y, Var& c)
-    // {
-    //     dest(x, y, c) = src( map_x(x,y), map_y(x, y), c);
-    //     return dest;
+    //     return clamped( map_x_uint(x, y), map_y_uint(x,y), c) ;
     // }
 
 

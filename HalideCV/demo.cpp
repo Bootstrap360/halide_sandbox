@@ -9,6 +9,10 @@ using namespace Halide::Tools;
 #include "HalideCV.h"
 
 #include <sys/time.h>
+
+const std::string image_dir = "/home/glen/repositories/halide_sandbox/images/rgb.png";
+
+
 double current_time() {
     static bool first_call = true;
     static timeval reference_time;
@@ -103,7 +107,7 @@ void remap_floor()
     // This method truncates the indexes of mapx and mapy to int32s.
 
     // Create read input from disk
-    Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
+    Buffer<uint8_t> input = load_image(image_dir);
     Buffer<int32_t> mapx(input.width(), input.height(), "mapx");
     Buffer<int32_t> mapy(input.width(), input.height(), "mapy");
 
@@ -131,24 +135,165 @@ void remap_floor()
 
 }
 
-void remap()
+void remap_1D_1()
 {
     // This method truncates the indexes of mapx and mapy to int32s.
-    
+    std::cout << "remap_1D" << std::endl;
     // Create read input from disk
-    Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
+    Buffer<uint8_t> input(2, "input");
+    Buffer<uint8_t> output(input.width() - 1, "output");
+    Buffer<float> map_x(output.width(), "mapx");
+
+    input(0) = 0;
+    input(1) = 1;
+
+    map_x(0) = 0.5;
+
+    Var x("x");
+
+    Func rmap_out("rmap_out");
+
+    // First, add a boundary condition to the input.
+    Func clamped("float_clamped");
+    Func map_x_int;
+    map_x_int(x) = cast<int>(map_x(x));
+
+    map_x_int(x) = print(map_x_int(x), " map_xint(", x,")", std::to_string(__LINE__));
+    Func ta("ta"), tb("tb"), b("b"), m("m");
+
+    Expr x_clamped = clamp(x, 0, input.width()-1);
+    clamped(x) = input(x_clamped);
+
+    ta(x) = clamped( map_x_int(x) );
+    tb(x) = clamped( map_x_int(x) + 1 );
+
+    ta(x) = print(ta(x), " ta(", x, ")", std::to_string(__LINE__));
+    tb(x) = print(tb(x), " tb(", x, ")", std::to_string(__LINE__));
+
+    m(x) = tb(x) - ta(x);
+    m(x) = print(m(x), " m(", x, ")", std::to_string(__LINE__));
+
+    b(x) = ta(x) - m(x) * map_x_int(x);
+
+    b(x) = print(b(x), " b(", x, ")", std::to_string(__LINE__));
+    Func tmp;
+    tmp(x) = print(m(x) * map_x(x), "m(", x, ") * map_x(", x,")");
+    Func tmp2;
+    tmp2(x) = print(tmp(x) + b(x), "tmp(", x, ") + b(", x, ")");
+    rmap_out(x) = cast<int>(tmp2(x));
+
+    // Func tmp3;
+    // tmp3 = m(x) * map_x_int(x);
+    // tmp3.realize( 1 );
+
+    // for(auto o : output)
+    // {
+    //     std::cout << o << std::endl;
+    // }
+
+    std::cout << "Done " << __LINE__ << std::endl;
+
+}
+
+void remap_1D()
+{
+    // This method truncates the indexes of mapx and mapy to int32s.
+    // This method truncates the indexes of mapx and mapy to int32s.
+    std::cout << "remap_1D" << std::endl;
+    // Create read input from disk
+    Var x("x");
+
+    Buffer<uint8_t> input(2, "input");
+    Buffer<uint8_t> output(input.width() - 1, "output");
+    Buffer<float> map_x(output.width(), "mapx");
+
+    input(0) = 0;
+    input(1) = 1;
+
+    map_x(0) = 0.5;
+
+
+
+    // First, add a boundary condition to the input.
+    Func clamped("float_clamped");
+    Func rmap_out("rmap_out");
+    Func map_x_int;
+    map_x_int(x) = cast<int>( map_x(x) );
+
+    map_x_int(x) = print(map_x_int(x), " map_xint(", x,")", std::to_string(__LINE__));
+    map_x(x) = print(map_x(x), " map_x(", x,")", std::to_string(__LINE__));
+    Func alpha("alpha"), tmp("tmp"), lhs("lhs"), rhs("rhs");
+
+    Expr x_clamped = clamp(x, 0, 2);
+    clamped(x) = input(x_clamped);
+    clamped(x) = print(clamped(x), " clamped(", x,")", std::to_string(__LINE__));
+
+    alpha(x) = map_x(x) - cast<float>(map_x_int(x));
+    alpha(x) = print(alpha(x), " alpha(", x,")", std::to_string(__LINE__));
+    
+
+    lhs(x) = clamped( clamp(map_x_int(x), 0, 1) ) * alpha(x);
+    lhs(x) = print(lhs(x), " lhs(", x,")", std::to_string(__LINE__));
+
+    rhs(x) = clamped( clamp(map_x_int(x) + 1, 0, 1) ) * (Expr(1.0) - alpha(x));
+    rhs(x) = print(rhs(x), " rhs(", x,")", std::to_string(__LINE__));
+
+    tmp(x) = lhs(x) + rhs(x);
+    tmp(x) = print(tmp(x), " tmp(", x,")", std::to_string(__LINE__));
+    // rmap_out(x) = cast<uint8_t>(tmp(x));
+    output = tmp.realize(1);
+
+    // for(int i = 0; i < )
+    // {
+    //     std::cout << "o = " << o << std::endl;
+    // }
+
+    std::cout << "output[0] = " << output(0) << std::endl;
+
+    std::cout << "Done " << __LINE__ << std::endl;
+
+}
+
+void remap_rgb()
+{
+    // This method truncates the indexes of mapx and mapy to int32s.
+    std::cout << "remap" << std::endl;
+    // Create read input from disk
+    Buffer<uint8_t> input(2, 2, 3, "input");
+    Buffer<uint8_t> output(2, 2, 3, "output");
     Buffer<float> mapx(input.width(), input.height(), "mapx");
     Buffer<float> mapy(input.width(), input.height(), "mapy");
 
-    // create a map that flips vertically and horizontally
-    int noise = 16;
-    float noiseAmplitude = 3;
+    for( int c = 0; c < 3; ++c)
+    {
+        input(0, 0, c) = 0;
+        input(0, 1, c) = 1;
+        input(1, 0, c) = 0;
+        input(1, 1, c) = 0;
+    }
+
     for (int i = 0; i < input.height(); ++i) {
         for (int j = 0; j < input.width(); ++j) {
-            mapx(j, i) = (j + (((rand() % 255)/255.0 - 0.5) * noiseAmplitude) );
-            mapy(j, i) = (i + (((rand() % 255)/255.0 - 0.5) * noiseAmplitude) );
+            mapx(j, i) = 0;
+            mapy(j, i) = 0;
         }
     }
+
+    mapx(0, 1) = 1;
+    
+    // create a map that flips vertically and horizontally
+    // float noiseAmplitude = 0.1;
+    // for (int i = 0; i < input.height(); ++i) {
+    //     for (int j = 0; j < input.width(); ++j) {
+    //         input(i, j, 0) = i;
+    //         input(i, j, 1) = i;
+    //         input(i, j, 2) = i;
+    //         // mapx(j, i) = (j + (((rand() % 255)/255.0 - 0.5) * noiseAmplitude) );
+    //         // mapy(j, i) = (i + (((rand() % 255)/255.0 - 0.5) * noiseAmplitude) );
+    //         mapx(j, i) = 0;
+    //         mapy(j, i) = 0;
+    //     }
+    // }
 
     Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
 
@@ -156,12 +301,62 @@ void remap()
 
     // First, add a boundary condition to the input.
     Func clamped("float_clamped");
+    Func mapx_int, mapy_int;
+    mapx_int(x, y) = cast<int>(mapx(x, y));
+    mapy_int(x, y) = cast<int>(mapy(x, y));
+
+    mapx_int(x, y) = print(mapx_int(x, y), " map_xint(", x,",", y,")", std::to_string(__LINE__));
+    mapy_int(x, y) = print(mapy_int(x, y), " map_yint(", x,",", y,")", std::to_string(__LINE__));
+    Func ta("ta"), tb("tb"), b("b"), m("m");
+
     Expr x_clamped = clamp(x, 0, input.width()-1);
     Expr y_clamped = clamp(y, 0, input.height()-1);
     clamped(x, y, c) = input(x_clamped, y_clamped, c);
 
-    // rmap_out(x, y, c) = clamped( mapx(x, y), clamp( mapy(x, y), 0, input.height() -1 ), c);
-    clamped.realize( input.width(), input.height(), input.channels() );
+    ta(x, y, c) = clamped(mapx_int(x, y), mapy_int(x, y), c);
+    tb(x, y, c) = clamped(mapx_int(x, y) + 1, mapy_int(x, y) + 1, c);
+
+    ta(x, y, c) = print(ta(x,y,c), " ta(", x, ",", y, ",", c, ")", std::to_string(__LINE__));
+    tb(x, y, c) = print(tb(x,y,c), " tb(", x, ",", y, ",", c, ")", std::to_string(__LINE__));
+
+    m(x, y, c) = tb(x, y, c) - ta(x, y, c);
+    m(x, y, c) = print(m(x,y,c), " m(", x, ",", y, ",", c, ")", std::to_string(__LINE__));
+    b(x, y, c) = ta(x, y, c) - m(x, y, c) * mapx_int(x, y);
+    b(x, y, c) = print(b(x, y, c), " b(", x, ",", y, ",", c, ")", std::to_string(__LINE__));
+    rmap_out(x, y, c) = m(x, y, c) * mapx_int(x, y) + b(x, y, c);
+    rmap_out.compute_root();
+    output = rmap_out.realize( input.width() - 1, input.height() -1, input.channels() );
+
+    // for(auto o : output)
+    // {
+    //     std::cout << o << std::endl;
+    // }
+
+    std::cout << "Done " << __LINE__ << std::endl;
+
+}
+
+Expr myExpr(Expr a, Expr b)
+{
+    return a + b;
+}
+
+void function_sandbox()
+{
+    Func gradient("gradient");
+    Func gradientx2("gradientx2");
+    Var x("x"), y("y"), c("c");
+    gradient(x, y, c ) = x + y;
+    print(gradient(x, y, c ));
+    gradientx2(x, y, c) = myExpr(gradient(x, y, c), gradient(x, y, c));
+
+    Buffer<int> output = gradient.realize(8, 8, 3);
+
+    for( auto p: output)
+    {
+        std::cout << p << std::endl;
+    }
+
 
 }
 
@@ -209,11 +404,6 @@ void blur_kernel()
 
 }
 
-Exp gauss(RDom r, Exp sigma)
-{
-    return exp2( - ( pow( r.x, 2 ) + pow(r.y, 2.0) ) / ( 2.0 * pow( sigma, 2)  )
-}
-
 void blur_kernel2()
 {
     //int W = 64*3, H = 64*3;
@@ -236,18 +426,18 @@ void blur_kernel2()
     Var x("x"), y("y"), c("c");
     
 
-    Func input("input");
-    input(x, y) = in(clamp(x, 0, in.width()-1), clamp(y, 0, in.height()-1));
-    input.compute_root();
+    // Func input("input");
+    // input(x, y) = in(clamp(x, 0, in.width()-1), clamp(y, 0, in.height()-1));
+    // input.compute_root();
 
-    RDom r(5,5);
-    Func kern("kern");
+    // RDom r(5,5);
+    // Func kern("kern");
 
-    kern(r.x, r.y) = exp2( -( pow( r.x, 2 ) + pow(r.y, 2.0) )  )
+    // kern(r.x, r.y) = exp2( -( pow( r.x, 2 ) + pow(r.y, 2.0) )  )
 
-    Func blur1("blur1");
-    blur1(x, y) += tent(r.x, r.y) * input(x + r.x - 1, y + r.y - 1);
-    blur1.realize(in.width(), in.height());
+    // Func blur1("blur1");
+    // blur1(x, y) += tent(r.x, r.y) * input(x + r.x - 1, y + r.y - 1);
+    // blur1.realize(in.width(), in.height());
 
 }
 
@@ -255,7 +445,7 @@ void derivative()
 {
 
     // Create an input with random values.
-    Buffer<uint8_t> input = load_image("/home/ubuntu/repositories/halide_sandbox/images/rgb.png");
+    Buffer<uint8_t> input = load_image(image_dir);
 
     Var x("x"), y("y"), c("c"), i("i"), u("u"), v("v");
     Func derivative("derivative");
@@ -276,8 +466,9 @@ int main()
     // indexing_histogram();
     // remap_floor();
     // derivative();
-    blur_kernel();
-    // remap();
+    // blur_kernel();
+    // function_sandbox();
+    remap_1D();
 
     // Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;
