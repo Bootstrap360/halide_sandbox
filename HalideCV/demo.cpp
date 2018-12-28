@@ -145,56 +145,14 @@ void remap_1D()
     // Create read input from disk
     Var x("x");
     Buffer<int> input(2, "input");
-    Buffer<int> map_x(2, "map_x");
-
-
-    input(0) = 1;
-    input(1) = 2;
-
-    map_x(0) = 0;
-    map_x(1) = 1;
-
-    Buffer<int> output(1, "output");
-
-    Func f_input("f_input"), f_input_bounded("f_input_bounded");
-    Func f_map_x("f_map_x"), f_map_x_bounded("f_map_x_bounded");
-    Func out("out");
-
-    f_input(x) = input(x);
-    f_map_x(x) = map_x(x);
-
-    std::vector< std::pair< Expr, Expr> > boundaryCondition = { { Expr(0), input.dim(0).extent() } };
-
-    f_input_bounded  = BoundaryConditions::constant_exterior(f_input, 0, { { Expr(0), input.dim(0).extent() } } );
-    f_map_x_bounded  = BoundaryConditions::constant_exterior(f_map_x, -1, { { Expr(0), map_x.dim(0).extent() } } );
-
-    out(x) = f_input_bounded(f_map_x_bounded(x));
-
-    output = out.realize(5);
-    
-    for(int i = 0; i < output.width(); ++i)
-    {
-        SHOW(output(i));
-    }
-
-    std::cout << "Done " << __LINE__ << std::endl;
-
-}
-
-void remap_1D_3()
-{
-    std::cout << "remap_1D_2" << std::endl;
-    // Create read input from disk
-    Var x("x");
-    Buffer<int> input(2, "input");
     Buffer<float> map_x(2, "map_x");
 
 
-    input(0) = 0;
-    input(1) = 10;
+    input(0) = 10;
+    input(1) = 20;
 
     map_x(0) = 0;
-    map_x(1) = 0.5;
+    map_x(1) = 0.3;
 
     Buffer<float> output(1, "output");
 
@@ -208,16 +166,26 @@ void remap_1D_3()
 
     std::vector< std::pair< Expr, Expr> > boundaryCondition = { { Expr(0), input.dim(0).extent() } };
 
+    // Do some bounds checking
     f_input_bounded  = BoundaryConditions::constant_exterior(f_input, 0, { { Expr(0), input.dim(0).extent() } } );
-    f_map_x_bounded  = BoundaryConditions::constant_exterior(f_map_x, -10.0f, { { Expr(0), map_x.dim(0).extent() } } );
+    // f_map_x_bounded  = BoundaryConditions::constant_exterior(f_map_x, -1.0f, { { Expr(0), map_x.dim(0).extent() } } );
+    f_map_x_bounded(x) = f_map_x(x);
+    
     f_map_x_int_bounded(x) = cast<int>(f_map_x_bounded(x));
 
-    alpha(x) = select( x < 0, 0.0f, f_map_x_bounded(x) - cast<float>(f_map_x_int_bounded(x)));
+    alpha(x) = select( x < 0, 0.0f
+                    , x >= map_x.dim(0).extent(), 0.0f
+                    , f_map_x_bounded(x) - cast<float>(f_map_x_int_bounded(x)));
+
+    // alpha(x) = select( x < 0, 0.0f, f_map_x_bounded(x) - cast<float>(f_map_x_int_bounded(x)));
 
     alpha(x) = PRINT(alpha, x );
 
     Func beta("beta");
-    beta(x) = select( (x - 1) < 0, 0.0f, 1.0f - alpha(x) );
+    beta(x) = select( x < 0, 0.0f
+                    , x >= map_x.dim(0).extent(), 0.0f
+                    , 1.0f - alpha(x) );
+
     beta(x) = PRINT(beta, x );
     // out(x) = f_input_bounded( f_map_x_int_bounded(x) ) * alpha(x) + f_input_bounded( f_map_x_int_bounded(x) + 1 ) * ( Expr(1.0) - alpha(x));
     out(x) = f_input_bounded( f_map_x_int_bounded(x) ) * alpha(x) + f_input_bounded( f_map_x_int_bounded(x) + 1 ) * beta(x);
@@ -227,10 +195,29 @@ void remap_1D_3()
     
     for(int i = 0; i < output.width(); ++i)
     {
+        SHOW(i);
         SHOW(output(i));
     }
 
     std::cout << "Done " << __LINE__ << std::endl;
+
+}
+
+void remap_2D()
+{
+
+    std::cout << "remap_2D" << std::endl;
+    // Create read input from disk
+    Var x("x"), y("y");
+    Buffer<int> input(2, 2, "input");
+    Buffer<float> map_x(2, 2, "map_x");
+    Buffer<float> map_y(2, 2, "map_y");
+
+    Func f_input("f_input"), f_input_bounded("f_input_bounded");
+    Func f_map_x("f_map_x"), f_map_x_bounded("f_map_x_bounded"), f_map_x_int_bounded("f_map_x_int_bounded");
+    Func f_map_y("f_map_y"), f_map_y_bounded("f_map_y_bounded"), f_map_y_int_bounded("f_map_y_int_bounded");
+
+    f_input_bounded  = BoundaryConditions::constant_exterior(f_input, {0, 0}, { { Expr(0), input.dim(0).extent() }, { Expr(0), input.dim(1).extent() } } );
 
 }
 
@@ -448,7 +435,7 @@ int main()
     // derivative();
     // blur_kernel();
     // function_sandbox();
-    remap_1D_3();
+    remap_1D();
 
     // Halide::Buffer<uint8_t> input = load_image("/home/glen/repositories/halide_sandbox/images/rgb.png");
     // Halide::Buffer<uint8_t> output;
